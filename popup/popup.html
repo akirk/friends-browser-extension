@@ -1,18 +1,36 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <meta charset="utf-8">
-    <script src="popup.js"></script>
+<head>
+	<meta charset="utf-8">
+	<script src="popup.js"></script>
+	<style>
+	.panel-list-item {
+		cursor: pointer;
+		padding: .5em;
+	}
+	.panel-list-item.disabled {
+		cursor: default;
+	}
+</style>
+</head>
 
-  </head>
+<body>
+	<header class="panel-section panel-section-header">
+		<div class="text-section-header">Friends</div>
+	</header>
+	<div class="panel-section panel-section-list" id='feedList'>
+		<div class="panel-list-item disabled">RSS & Atom Feeds</div>
+	</div>
+	<div class="panel-section-separator"></div>
+	<div class="panel-section panel-section-list" id='meList'>
+		<div class="panel-list-item disabled">rel=me</div>
+	</div>
+	<div class="panel-section-separator"></div>
+	<div class="panel-section panel-section-list" id='addFriend'>
+		<div class="panel-list-item disabled">alexander.kirk.at</div>
+	</div>
 
-  <body>
-
-    <div class="panel-section panel-section-list" id='feedList'>
-
-    </div>
-
-  </body>
+</body>
 
 </html>

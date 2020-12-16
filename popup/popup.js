@@ -1,62 +1,79 @@
-
-var options = {
-    newTab: true,
-};
-
-function onOptions(opts) {
-  options = opts;
-}
-
-function onError(error) {
-  console.log(`Error on get options: ${error}`);
-}
-
-browser.storage.sync.get(options).then(onOptions, onError);
-
 document.addEventListener("DOMContentLoaded", function(event) {
+	const feedList = document.getElementById('feedList');
+	const meList = document.getElementById('meList');
+	const addFriend = document.getElementById('addFriend');
 
+	const url = new URL(location.href);
+	const feeds = JSON.parse(url.searchParams.get('feeds'));
 
-  const feedList = document.getElementById('feedList');
+	feedList.style.display = 'none';
+	for (feed_url in feeds) {
+		if (feeds.hasOwnProperty(feed_url)) {
 
-  const url = new URL(location.href);
-  const feeds = JSON.parse(url.searchParams.get('feeds'));
+			let li = document.createElement("div");
+			li.classList.add("panel-list-item");
+			li.setAttribute("data-href", feed_url);
 
-  for (feed_url in feeds) {
-    if (feeds.hasOwnProperty(feed_url)) {
+			let a = document.createElement("div");
+			a.classList.add("text");
+			a.innerText = feeds[feed_url];
 
-      let li = document.createElement("div");
-      li.classList.add("panel-list-item");
-      li.setAttribute("data-href", feed_url);
+			li.appendChild(a);
+			feedList.appendChild(li);
+			feedList.style.display = 'block';
+		}
+	}
 
-      let a = document.createElement("div");
-      a.classList.add("text");
-      a.innerText = feeds[feed_url];
+	const mes = JSON.parse(url.searchParams.get('mes'));
 
-      li.appendChild(a);
-      feedList.appendChild(li);
-    }
-  }
+	meList.style.display = 'none';
+	for (me_url in mes) {
+		if (mes.hasOwnProperty(me_url)) {
 
-  document.querySelectorAll(".panel-list-item").forEach( (elem) => {
+			let li = document.createElement("div");
+			li.classList.add("panel-list-item");
+			li.setAttribute("data-href", me_url);
 
-    function onUpdated(tab) {
-    }
+			let a = document.createElement("div");
+			a.classList.add("text");
+			a.innerText = mes[me_url];
 
-    function onError(error) {
-    }
+			li.appendChild(a);
+			meList.appendChild(li);
+			meList.style.display = 'block';
+		}
+	}
 
-    elem.addEventListener('click', (event) => {
+	const friendsUrl = url.searchParams.get('friendsUrl');
+	if ( friendsUrl ) {
+		let li = document.createElement("div");
+		li.classList.add("panel-list-item");
+		li.setAttribute("data-href", friendsUrl);
 
-      let url = elem.getAttribute("data-href");
-      if (url) {
-        if (options.newTab)
-          browser.tabs.create({url: url});
-        else
-          browser.tabs.update({url: url}).then(onUpdated, onError);
-      }
+		let a = document.createElement("div");
+		a.classList.add("text");
+		a.innerText = 'Add as a friend / Subscribe';
 
-    });
+		li.appendChild(a);
+		addFriend.appendChild(li);
+	} else {
+		addFriend.style.display = 'none';
+	}
 
-  });
+	document.querySelectorAll(".panel-list-item").forEach( (elem) => {
+		elem.addEventListener('click', (event) => {
+
+			let url = elem.getAttribute("data-href");
+			if (url) {
+				if ( chrome ) {
+					chrome.tabs.create({url: url});
+				} else {
+					browser.tabs.create({url: url});
+				}
+			}
+
+		});
+
+	});
 
 });

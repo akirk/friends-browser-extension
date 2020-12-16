@@ -3,17 +3,7 @@ function saveOptions(e) {
   e.preventDefault();
 
   browser.storage.sync.set({
-    doThumb: document.querySelector("#doThumb").checked,
-    doMaxWidth: document.querySelector("#doMaxWidth").checked,
-    valMaxWidth: document.querySelector("#valMaxWidth").value,
-    doDetect: document.querySelector("#doDetect").checked,
-    preventPreview: document.querySelector("#preventPreview").checked,
-    fullPreview: document.querySelector("#fullPreview").checked,
-    doAuthor: document.querySelector("#doAuthor").checked,
-    orangeIcon: document.querySelector("#orangeIcon").checked,
-    enableCss: document.querySelector("#enableCss").checked,
-    customCss: document.querySelector("#customCss").value,
-    newTab: document.querySelector("#newTab").checked
+    friendsUrl: document.querySelector("#friendsUrl").value
   });
 }
 
@@ -21,17 +11,7 @@ function saveOptions(e) {
 function restoreOptions() {
 
   function onResult(result) {
-    document.querySelector("#doThumb").checked = result.doThumb;
-    document.querySelector("#doMaxWidth").checked = result.doMaxWidth;
-    document.querySelector("#valMaxWidth").value = result.valMaxWidth;
-    document.querySelector("#doDetect").checked = result.doDetect;
-    document.querySelector("#preventPreview").checked = result.preventPreview;
-    document.querySelector("#fullPreview").checked = result.fullPreview;
-    document.querySelector("#doAuthor").checked = result.doAuthor;
-    document.querySelector("#orangeIcon").checked = result.orangeIcon;
-    document.querySelector("#enableCss").checked = result.enableCss;
-    document.querySelector("#customCss").value = result.customCss;
-    document.querySelector("#newTab").checked = result.newTab;
+    document.querySelector("#friendsUrl").value = result.friendsUrl;
   }
 
   function onError(error) {
@@ -39,17 +19,7 @@ function restoreOptions() {
   }
 
   var getting = browser.storage.sync.get({
-    doThumb: false,
-    doMaxWidth: true,
-    valMaxWidth: "900px",
-    doDetect: true,
-    preventPreview: false,
-    fullPreview: false,
-    doAuthor: false,
-    orangeIcon: false,
-    enableCss: false,
-    customCss: null,
-    newTab: true
+    friendsUrl: null
   });
   getting.then(onResult, onError);
 

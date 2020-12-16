@@ -1,12 +1,12 @@
-# rsspreview
+# Friends Browser Extension
 
-Firefox has removed support for RSS in versions 64+, including the useful preview feature.
+This extension is heavily based on the Firefox extension [RSS Preview](https://github.com/aureliendavid/rsspreview) by [Aurelien David](https://github.com/aureliendavid).
 
-This extension attempts to recreate it.
+The extension works in Firefox and Chrome. It allows quick insight into:
+- The feeds offered by the current page as `<link rel="alternative" />`.
+- Other profiles of the user shown as `<link rel="me" />`.
 
-Download at: https://addons.mozilla.org/en-US/firefox/addon/rsspreview/
+If you use the [Friends Plugin](https://wordpress.org/plugins/friends/) for WordPress, you can also add the current site as a friend.
 
-Additional features:
-* feed detection and address bar button
-* detect feeds from itunes podcast pages
-* custom css support
+![Screenshot](screenshot.png)
+

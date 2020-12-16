@@ -1,26 +1,24 @@
 {
 
   "manifest_version": 2,
-  "name": "RSSPreview",
-  "version": "3.15",
-  "author": "Aurelien David",
-  "homepage_url": "https://github.com/aureliendavid/rsspreview",
+  "name": "Friends",
+  "version": "1.0",
+  "author": "Alex Kirk",
+  "homepage_url": "https://github.com/akirk/friends-browser-extension",
 
-  "description": "Preview RSS feeds in browser",
-
+  "description": "Display Feeds and rel=me locations. Based on RSS Preview.",
 
   "icons": {
-    "32": "icons/rss-32.png",
-    "48": "icons/rss-48.png",
-    "64": "icons/rss-64.png",
-    "128": "icons/rss-128.png",
-    "256": "icons/rss-256.png"
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "64": "icons/icon-64.png",
+    "128": "icons/icon-128.png",
+    "256": "icons/icon-256.png"
   },
 
   "background": {
-      "scripts": ["background.js"]
+    "scripts": ["background.js"]
   },
-
 
   "content_scripts": [
     {
@@ -31,7 +29,6 @@
 
   "web_accessible_resources": ["preview.css", "rss.xsl", "icons/*.png"],
 
-
   "options_ui": {
     "page": "settings/options.html"
   },
@@ -39,16 +36,10 @@
   "page_action": {
     "browser_style": true,
     "default_icon": {
-      "19": "icons/rss-gray-19.png",
-      "38": "icons/rss-gray-38.png"
+      "19": "icons/icon-19.png",
+      "38": "icons/icon-38.png"
     },
-    "default_title": "Feeds in page"
-  },
-
-  "applications": {
-    "gecko": {
-      "id": "{7799824a-30fe-4c67-8b3e-7094ea203c94}"
-    }
+    "default_title": "Friends"
   },
 
   "permissions": ["<all_urls>", "webRequest", "webRequestBlocking", "storage", "tabs"]
