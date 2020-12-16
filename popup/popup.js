@@ -1,20 +1,21 @@
 document.addEventListener("DOMContentLoaded", function(event) {
 	const feedList = document.getElementById('feedList');
 	const meList = document.getElementById('meList');
-	const addFriend = document.getElementById('addFriend');
+	const friendsSection = document.getElementById('friendsSection');
 
 	const url = new URL(location.href);
 	const feeds = JSON.parse(url.searchParams.get('feeds'));
+	let a, li;
 
 	feedList.style.display = 'none';
 	for (feed_url in feeds) {
 		if (feeds.hasOwnProperty(feed_url)) {
 
-			let li = document.createElement("div");
+			li = document.createElement("div");
 			li.classList.add("panel-list-item");
 			li.setAttribute("data-href", feed_url);
 
-			let a = document.createElement("div");
+			a = document.createElement("div");
 			a.classList.add("text");
 			a.innerText = feeds[feed_url];
 
@@ -30,11 +31,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	for (me_url in mes) {
 		if (mes.hasOwnProperty(me_url)) {
 
-			let li = document.createElement("div");
+			li = document.createElement("div");
 			li.classList.add("panel-list-item");
 			li.setAttribute("data-href", me_url);
 
-			let a = document.createElement("div");
+			a = document.createElement("div");
 			a.classList.add("text");
 			a.innerText = mes[me_url];
 
@@ -44,32 +45,58 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		}
 	}
 
-	const friendsUrl = url.searchParams.get('friendsUrl');
-	if ( friendsUrl ) {
-		let li = document.createElement("div");
-		li.classList.add("panel-list-item");
-		li.setAttribute("data-href", friendsUrl);
+	const personalHomeUrl = url.searchParams.get('personalHomeUrl');
+	if ( personalHomeUrl ) {
+		document.getElementById('friendsHeader').innerText = personalHomeUrl.replace( /https?:\/\//, '' ).replace( /\/$/, '' );
 
-		let a = document.createElement("div");
+		li = document.createElement("div");
+		li.classList.add("panel-list-item");
+		li.setAttribute("data-href", url.searchParams.get('addFriendUrl'));
+
+		a = document.createElement("div");
 		a.classList.add("text");
-		a.innerText = 'Add as a friend / Subscribe';
+		if ( url.searchParams.get('friendsPluginInstalled') ) {
+			a.innerText = 'Add ' + url.searchParams.get('currentHost') + ' as a friend';
+		} else {
+			a.innerText = 'Subscribe ' + url.searchParams.get('currentHost');
+		}
+		li.appendChild(a);
+		friendsSection.appendChild(li);
+
+		li = document.createElement("div");
+		li.classList.add("panel-list-item");
+		li.setAttribute("data-href", url.searchParams.get('personalFriendsUrl'));
+
+		a = document.createElement("div");
+		a.classList.add("text");
+		a.innerText = 'Your Friends\' Latest Posts';
 
 		li.appendChild(a);
-		addFriend.appendChild(li);
+		friendsSection.appendChild(li);
 	} else {
-		addFriend.style.display = 'none';
+		li = document.createElement("div");
+		li.classList.add("panel-list-item");
+
+		a = document.createElement("div");
+		a.classList.add("text");
+		a.innerText = 'Please set your personal URL';
+
+		li.appendChild(a);
+		friendsSection.appendChild(li);
 	}
 
 	document.querySelectorAll(".panel-list-item").forEach( (elem) => {
 		elem.addEventListener('click', (event) => {
 
-			let url = elem.getAttribute("data-href");
+			const url = elem.getAttribute("data-href");
+			if ( typeof chrome != 'undefined' && typeof browser == 'undefined' ) {
+				browser = chrome;
+			}
+
 			if (url) {
-				if ( chrome ) {
-					chrome.tabs.create({url: url});
-				} else {
-					browser.tabs.create({url: url});
-				}
+				browser.tabs.create({url: url});
+			} else {
+				browser.runtime.openOptionsPage();
 			}
 
 		});

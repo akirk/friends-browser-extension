@@ -51,10 +51,21 @@ browser.webRequest.onHeadersReceived.addListener(
 function handleMessage(request, sender, sendResponse) {
 		let popup = new URL(browser.runtime.getURL('popup/popup.html'));
 		popup.searchParams.set('feeds', JSON.stringify(request.feeds));
-		popup.searchParams.set('mes', JSON.stringify(request.mes));
+		if (request.mes) {
+			popup.searchParams.set('mes', JSON.stringify(request.mes));
+		}
+		if (request.friendsPluginInstalled) {
+			popup.searchParams.set('friendsPluginInstalled', request.friendsPluginInstalled);
+		}
 
-		if (request.friendsUrl) {
-			popup.searchParams.set('friendsUrl', request.friendsUrl);
+		if (request.currentHost) {
+			popup.searchParams.set('currentHost', request.currentHost);
+		}
+
+		if (request.personalHomeUrl) {
+			popup.searchParams.set('personalHomeUrl', request.personalHomeUrl);
+			popup.searchParams.set('personalFriendsUrl', request.personalFriendsUrl);
+			popup.searchParams.set('addFriendUrl', request.addFriendUrl);
 		}
 
 		if ( typeof chrome != 'undefined' && typeof browser == 'undefined' ) {

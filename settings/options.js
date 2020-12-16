@@ -1,27 +1,30 @@
 
 function saveOptions(e) {
-  e.preventDefault();
-
-  browser.storage.sync.set({
-    friendsUrl: document.querySelector("#friendsUrl").value
-  });
+	e.preventDefault();
+	try {
+		browser.storage.sync.set({
+			personalHomeUrl: document.querySelector("#personalHomeUrl").value
+		});
+	} catch (e) {
+		onError(e);
+	}
 }
 
 
 function restoreOptions() {
 
-  function onResult(result) {
-    document.querySelector("#friendsUrl").value = result.friendsUrl;
-  }
+	function onResult(result) {
+		document.querySelector("#personalHomeUrl").value = result.personalHomeUrl;
+	}
 
-  function onError(error) {
-    console.log(`Error: ${error}`);
-  }
+	function onError(error) {
+		console.log(`Error: ${error}`);
+	}
 
-  var getting = browser.storage.sync.get({
-    friendsUrl: null
-  });
-  getting.then(onResult, onError);
+	var getting = browser.storage.sync.get({
+		personalHomeUrl: null
+	});
+	getting.then(onResult, onError);
 
 }
 
@@ -30,5 +33,5 @@ function restoreOptions() {
 document.addEventListener("DOMContentLoaded", restoreOptions);
 
 document.querySelectorAll('.validate').forEach((elem) => {
-  elem.addEventListener('change', saveOptions);
+	elem.addEventListener('change', saveOptions);
 });
