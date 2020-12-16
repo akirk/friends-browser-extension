@@ -21,11 +21,14 @@ function restoreOptions() {
 		console.log(`Error: ${error}`);
 	}
 
-	var getting = browser.storage.sync.get({
-		personalHomeUrl: null
-	});
-	getting.then(onResult, onError);
-
+	try {
+		var getting = browser.storage.sync.get({
+			personalHomeUrl: null
+		});
+		getting.then(onResult, onError);
+	} catch (e) {
+		onError(e);
+	}
 }
 
 
