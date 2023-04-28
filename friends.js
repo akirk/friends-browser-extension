@@ -317,6 +317,7 @@
 			}
 			feeds.addFriendUrl = options.personalHomeUrl + '?add-friend=' + encodeURIComponent( window.location.href );
 			feeds.personalFriendsUrl = options.personalHomeUrl + '/friends/';
+			feeds.replytoFriendsUrl = options.personalHomeUrl + '/friends/type/status/?in_reply_to=' + encodeURIComponent( window.location.href );
 			feeds.personalHomeUrl = options.personalHomeUrl;
 			feeds.currentHost = window.location.host;
 			let msg = browser.runtime.sendMessage(feeds);

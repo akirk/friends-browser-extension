@@ -68,6 +68,7 @@ function handleMessage(request, sender, sendResponse) {
 		if (request.personalHomeUrl) {
 			popup.searchParams.set('personalHomeUrl', request.personalHomeUrl);
 			popup.searchParams.set('personalFriendsUrl', request.personalFriendsUrl);
+			popup.searchParams.set('replytoFriendsUrl', request.replytoFriendsUrl);
 			popup.searchParams.set('addFriendUrl', request.addFriendUrl);
 		}
 

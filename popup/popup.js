@@ -67,6 +67,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		li.appendChild(a);
 		friendsSection.appendChild(li);
 
+		if ( url.searchParams.get('replytoFriendsUrl') && mastodon ) {
+			li = document.createElement("div");
+			li.classList.add("panel-list-item");
+			li.setAttribute("data-href", url.searchParams.get('replytoFriendsUrl'));
+
+			a = document.createElement("div");
+			a.classList.add("text");
+			a.innerText = 'Reply to this toot';
+			li.appendChild(a);
+			friendsSection.appendChild(li);
+		}
+
 		li = document.createElement("div");
 		li.classList.add("panel-list-item");
 		li.setAttribute("data-href", url.searchParams.get('personalFriendsUrl'));
