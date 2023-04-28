@@ -2,11 +2,11 @@
 
   "manifest_version": 2,
   "name": "Friends",
-  "version": "1.0",
+  "version": "1.1",
   "author": "Alex Kirk",
   "homepage_url": "https://github.com/akirk/friends-browser-extension",
 
-  "description": "Display Feeds and rel=me locations. Based on RSS Preview.",
+  "description": "Display Feeds and rel=me locations. Follow Mastodon accounts. Based on RSS Preview.",
 
   "icons": {
     "32": "icons/icon-32.png",
@@ -40,6 +40,12 @@
       "38": "icons/icon-38.png"
     },
     "default_title": "Friends"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "friends-addon@kirk.at",
+      "strict_min_version": "42.0"
+    }
   },
 
   "permissions": ["<all_urls>", "webRequest", "webRequestBlocking", "storage", "tabs"]

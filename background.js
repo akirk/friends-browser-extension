@@ -54,6 +54,9 @@ function handleMessage(request, sender, sendResponse) {
 		if (request.mes) {
 			popup.searchParams.set('mes', JSON.stringify(request.mes));
 		}
+		if (request.mastodon) {
+			popup.searchParams.set('mastodon', JSON.stringify(request.mastodon));
+		}
 		if (request.friendsPluginInstalled) {
 			popup.searchParams.set('friendsPluginInstalled', request.friendsPluginInstalled);
 		}

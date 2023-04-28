@@ -308,14 +308,14 @@
 	}
 
 	function registerFeeds(feeds) {
-		if (Object.keys(feeds.feeds).length > 0||Object.keys(feeds.mes).length > 0) {
+		if (Object.keys(feeds.feeds).length > 0||Object.keys(feeds.mes).length > 0||Object.keys(feeds.mastodon).length > 0) {
 			function handleResponse(message) {
 			}
 
 			function handleError(error) {
-				//console.log(error);
+				console.log(error);
 			}
-			feeds.addFriendUrl = options.personalHomeUrl + '?add-friend=' + window.location.href;
+			feeds.addFriendUrl = options.personalHomeUrl + '?add-friend=' + encodeURIComponent( window.location.href );
 			feeds.personalFriendsUrl = options.personalHomeUrl + '/friends/';
 			feeds.personalHomeUrl = options.personalHomeUrl;
 			feeds.currentHost = window.location.host;
@@ -382,6 +382,7 @@
 		let feeds = {
 			feeds: {},
 			mes: {},
+			mastodon: {},
 			friendsPluginInstalled: false
 		};
 		document.querySelectorAll("link[rel='alternate']").forEach( (elem) => {
@@ -397,6 +398,16 @@
 
 				if (url) {
 					feeds.feeds[url] = (title ? title : url);
+				}
+			}
+			if (type.includes('application/activity+json')) {
+				let url = elem.href;
+				if (url) {
+					try {
+						feeds.mastodon.name = document.querySelector('meta[property=og\\\:title]').content;
+						feeds.mastodon.username = document.querySelector('meta[property=profile\\\:username]').content;
+						feeds.mastodon.url = url;
+					} catch {}
 				}
 			}
 		});

@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 	const url = new URL(location.href);
 	const feeds = JSON.parse(url.searchParams.get('feeds'));
+	const mastodon = JSON.parse(url.searchParams.get('mastodon'));
 	let a, li;
 
 	feedList.style.display = 'none';
@@ -57,6 +58,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		a.classList.add("text");
 		if ( url.searchParams.get('friendsPluginInstalled') ) {
 			a.innerText = 'Add ' + url.searchParams.get('currentHost') + ' as a friend';
+		} else if ( mastodon ) {
+			a.innerText = 'Follow ' + mastodon.username;
+			li.setAttribute("data-href", url.searchParams.get('personalHomeUrl') + '?add-friend=' + encodeURIComponent( '@' + mastodon.username ) );
 		} else {
 			a.innerText = 'Subscribe ' + url.searchParams.get('currentHost');
 		}
