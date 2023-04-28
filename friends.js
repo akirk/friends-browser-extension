@@ -64,7 +64,7 @@
 			);
 			let xml_desc = xml_parser.serializeToString(html_desc.body.firstChild);
 
-			feed_desc.insertAdjacentHTML('afterend', xml_desc);
+			feed_desc.insertAdjacentText('afterend', xml_desc);
 
 			feed_desc.parentNode.removeChild(feed_desc);
 		} catch (e) {
@@ -96,7 +96,7 @@
 					html_desc.body.firstChild
 				);
 
-				tohtml[i].insertAdjacentHTML('afterend', xml_desc);
+				tohtml[i].insertAdjacentText('afterend', xml_desc);
 				tohtml[i].setAttribute('todel', 1);
 			} catch (e) {
 				console.error(e);
@@ -165,7 +165,7 @@
 			if (et[i].innerText.indexOf('<') >= 0) {
 				let tmp = document.createElement('span');
 				try {
-					tmp.innerHTML = et[i].innerText;
+					tmp.textContent = et[i].innerText;
 					et[i].innerText = tmp.textContent;
 				} catch (e) {
 					console.error(e);
@@ -207,7 +207,7 @@
 		let extimgs = el.getElementsByClassName('extImg');
 
 		for (let i = 0; i < extimgs.length; i++)
-			extimgs[i].src = browser.extension.getURL(
+			extimgs[i].src = browser.runtime.getURL(
 				extimgs[i].attributes['data-src'].nodeValue
 			);
 	}
@@ -236,12 +236,12 @@
 
 		let css = doc.createElement('link');
 		css.setAttribute('rel', 'stylesheet');
-		css.setAttribute('href', browser.extension.getURL('preview.css'));
+		css.setAttribute('href', browser.runtime.getURL('preview.css'));
 		doc.head.appendChild(css);
 
 		if (options.enableCss && options.customCss) {
 			let node = doc.createElement('style');
-			node.innerHTML = options.customCss;
+			node.textContent = options.customCss;
 			doc.head.appendChild(node);
 		}
 
@@ -278,7 +278,7 @@
 		let feed_url = window.location.href;
 		let preview = makepreviewhtml();
 
-		xhrdoc(browser.extension.getURL('rss.xsl'), 'xml', xsl_xml => {
+		xhrdoc(browser.runtime.getURL('rss.xsl'), 'xml', xsl_xml => {
 			applyxsl(feedNode, xsl_xml, preview.getElementById('feedBody'), preview);
 
 			// replace the content with the preview document

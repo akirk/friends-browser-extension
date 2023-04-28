@@ -43,8 +43,8 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "friends-addon@kirk.at",
-      "strict_min_version": "42.0"
+      "id": "{ee0abbe5-65ed-424e-8a85-79f0b0b2fdc3}",
+      "strict_min_version": "57.0"
     }
   },
 
