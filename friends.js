@@ -476,4 +476,10 @@
 		onError(e);
 	}
 
+	window.addEventListener('popstate', function() {
+		onOptions();
+	} );
+	window.addEventListener('click', function() {
+		onOptions();
+	} );
 })();
