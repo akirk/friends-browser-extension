@@ -2,8 +2,12 @@
 function saveOptions(e) {
 	e.preventDefault();
 	try {
+		var url = document.querySelector("#personalHomeUrl").value;
+		if ( url.substr( 0, 7 ) !== 'http://' && url.substr( 0, 8 ) !== 'https://' ) {
+			url = 'https://' + url;
+		}
 		browser.storage.sync.set({
-			personalHomeUrl: document.querySelector("#personalHomeUrl").value
+			personalHomeUrl: url
 		});
 	} catch (e) {
 		onError(e);
@@ -37,4 +41,5 @@ document.addEventListener("DOMContentLoaded", restoreOptions);
 
 document.querySelectorAll('.validate').forEach((elem) => {
 	elem.addEventListener('change', saveOptions);
+	elem.addEventListener('keyup', saveOptions);
 });
