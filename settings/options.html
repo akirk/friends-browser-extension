@@ -15,20 +15,27 @@
       form {
         margin-top: 1em;
       }
+      #apiKey {
+        width: 20em;
+      }
     </style>
   </head>
 
   <body>
     <form>
     <p id="note"></p>
-    <p>This Browser extension is a companion to your personal WordPress with the <a href="https://wordpress.org/plugins/friends/">Friends Plugin</a> installed).</p>
+    <p>This Browser extension is a companion to your personal WordPress with the <a href="https://wordpress.org/plugins/friends/" target="_blank">Friends Plugin</a> installed.</p>
     <p>It adds a toolbar icon <img id="icon" src=""> which then offers to interact with the current page and your own WordPress site.</p>
-    <label class="setting browser-style">Your own WordPress URL (with the <a href="https://wordpress.org/plugins/friends/" target="_blank">Friends Plugin</a> installed): <input type="url" id="personalHomeUrl" class="validate" /></label>
-
-    <!-- Show the key input when the own WordPress URL has been verified -->
-    <div id="keyInput" style="display: none">
-      <label class="setting browser-style">Enter <a href="" id="settingsUrl" target="_blank">Friends Browser Extension Key</a>: <input type="text" id="apiKey" class="validate" /></label>
-    </div>
+    <table>
+      <tr>
+        <td><label for="personalHomeUrl" class="setting browser-style">Enter your own WordPress URL:</label></td>
+        <td><input type="url" id="personalHomeUrl" class="validate" /></td>
+      </tr>
+      <tr id="keyInput" style="display: none">
+        <td><label for="apiKey" class="setting browser-style">Enter your <a href="" id="settingsUrl" target="_blank">Browser Extension Key</a>:</label></td>
+        <td><input type="text" id="apiKey" class="validate" /></td>
+      </tr>
+    </table>
     <button id="save">Save</button>
     </form>
     <p id="friendsVersion"></p>
