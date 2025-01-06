@@ -36,6 +36,9 @@
     },
     "default_title": "Friends"
   },
+  "background": {
+    "service_worker": "background.js"
+  },
   "browser_specific_settings": {
     "gecko": {
       "id": "{ee0abbe5-65ed-424e-8a85-79f0b0b2fdc3}",
