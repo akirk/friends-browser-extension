@@ -3,11 +3,40 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="color-scheme" content="dark light">
+    <style>
+      #note {
+        background-color: #f9f9f9;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        display: none;
+      }
+      form {
+        margin-top: 1em;
+      }
+    </style>
   </head>
 
   <body>
-
+    <form>
+    <p id="note"></p>
+    <p>This Browser extension is a companion to your personal WordPress with the <a href="https://wordpress.org/plugins/friends/">Friends Plugin</a> installed).</p>
+    <p>It adds an icon <img id="icon" src=""> to the browser bar which will appear if the current page has a feed.</p>
     <label class="setting browser-style">Your own WordPress URL (with the <a href="https://wordpress.org/plugins/friends/">Friends Plugin</a> installed): <input type="url" id="personalHomeUrl" class="validate" /></label>
+
+    <!-- Show the key input when the own WordPress URL has been verified -->
+    <div id="keyInput" style="display: none">
+      <label class="setting browser-style">Enter <a href="" id="settingsUrl">Friends Browser Extension Key</a>: <input type="text" id="apiKey" class="validate" /></label>
+    </div>
+    <button id="save">Save</button>
+    </form>
+    <p id="friendsVersion"></p>
+
+    <div id="postCollectionsHolder" style="display: none">
+    <p>Post Collections:</p>
+    <ul id="postCollections"></ul>
+    </div>
     <script src="options.js"></script>
 
   </body>

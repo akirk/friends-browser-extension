@@ -3,15 +3,63 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="color-scheme" content="dark light">
 	<script src="popup.js"></script>
 	<style>
+	.panel-section-header {
+		padding: .5em .2em;
+		font-weight: bold;
+	}
+
 	.panel-list-item {
 		cursor: pointer;
-		padding: .5em;
+		padding: .1em .3em;
+	}
+	.panel-section-list {
+		border-top: 1px solid light-dark( #ccc, #333 );
+		margin: 0;
+		padding: 0;
+		padding-top: .5em;
+		margin-bottom: .3em;
 	}
 	.panel-list-item.disabled {
 		cursor: default;
 		color: #999;
+	}
+	a,button {
+		padding: .5em;
+		display: block;
+		max-width: 30em;
+		text-decoration: none;
+		color: inherit;
+		border: none;
+		margin: 0;
+		font-size: inherit;
+		background: inherit;
+		cursor: pointer;
+	}
+	button {
+		width: 100%;
+		text-align: left;
+	}
+	a:hover,button:hover {
+		background-color: light-dark( #ccc, #333 );
+	}
+	body {
+		font-family: sans-serif;
+		margin: 0;
+		padding: .3em;
+		min-width: 15em;
+		font-size: .8em;
+	}
+	ul, .panel-list-item form {
+		margin: 0;
+		padding: 0;
+	}
+	ul li {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
 	}
 </style>
 </head>
@@ -22,14 +70,19 @@
 	</header>
 	<div class="panel-section panel-section-list" id='feedList'>
 		<div class="panel-list-item disabled">RSS & Atom Feeds</div>
+		<ul></ul>
 	</div>
-	<div class="panel-section-separator"></div>
 	<div class="panel-section panel-section-list" id='meList'>
 		<div class="panel-list-item disabled">rel=me</div>
+		<ul></ul>
 	</div>
-	<div class="panel-section-separator"></div>
 	<div class="panel-section panel-section-list" id='friendsSection'>
 		<div class="panel-list-item disabled" id="friendsHeader">Your Own Homepage</div>
+		<ul></ul>
+	</div>
+	<div class="panel-section panel-section-list" id='postCollections'>
+		<div class="panel-list-item disabled">Post Collections</div>
+		<ul></ul>
 	</div>
 
 </body>
