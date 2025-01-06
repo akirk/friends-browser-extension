@@ -4,7 +4,7 @@
   "version": "1.3.0",
   "author": "Alex Kirk",
   "homepage_url": "https://github.com/akirk/friends-browser-extension",
-  "description": "Companion to the WordPress plugin Friends. Display Feeds and rel=me locations. Follow Mastodon accounts, reply to toots. Send to Post Collection.",
+  "description": "Companion to the WordPress plugin Friends. Follow Mastodon accounts, reply to toots. Send to Post Collection.",
   "icons": {
     "32": "icons/icon-32.png",
     "48": "icons/icon-48.png",
@@ -45,7 +45,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "{ee0abbe5-65ed-424e-8a85-79f0b0b2fdc3}",
-      "strict_min_version": "57.0"
+      "strict_min_version": "109.0"
     }
   },
   "permissions": [
