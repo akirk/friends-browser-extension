@@ -20,3 +20,10 @@ If you enter the browser extension key that you can find on your Friends page (l
 
 ![Screenshot of Settings](screenshot2.png)
 
+## Testing on Firefox Mobile
+
+Follow a guide like [Debugging Firefox on Android](https://chenhuijing.com/blog/debugging-firefox-on-android/), get your device id with `adb devices -l`, go to `about:debugging` in Firefox, enable remote debugging, and run the extension with:
+
+```
+web-ext run -t firefox-android --adb-device <deviceid> --firefox-apk org.mozilla.firefox
+```
