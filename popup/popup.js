@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			func: detectFeeds
 		},
 		(results) => {
+			console.log( results );
 			const feedList = document.querySelector('#feedList ul');
 			const postCollections = document.querySelector('#postCollections ul');
 			const meList = document.querySelector('#meList ul');
@@ -50,36 +51,32 @@ document.addEventListener("DOMContentLoaded", () => {
 				li.classList.add("panel-list-item");
 				a = document.createElement('a');
 				a.href = addFriendUrl;
-				a.title = a.href;
-				a.target = '_blank';
 				if ( feeds.friendsPluginInstalled ) {
-					a.textContent = 'Add ' + message.currentHost + ' as a friend';
+					a.textContent = 'Add ' + message.currentTitle.substr( 0, 50 ) + ' as a friend';
 				} else if ( mastodon && mastodon.username ) {
 					a.textContent = 'Follow ' + mastodon.username;
-					a = document.createElement('a');
 					a.href = personalHomeUrl + '?add-friend=' + encodeURIComponent( '@' + mastodon.username );
-					a.title = a.href;
-					a.target = '_blank';
-					li.appendChild(a);
 				} else {
-					a.textContent = 'Subscribe ' + message.currentHost;
+					a.textContent = 'Subscribe ' + message.currentTitle.substr( 0, 50 );
 				}
+				a.title = a.href;
+				a.target = '_blank';
 				li.appendChild(a);
 				friendsSection.appendChild(li);
 
-				if ( replytoFriendsUrl && mastodon && mastodon.title ) {
+				if ( replytoFriendsUrl && mastodon && mastodon.status ) {
 					li = document.createElement("li");
 					li.classList.add("panel-list-item");
 					a = document.createElement('a');
 					a.href = replytoFriendsUrl;
 					a.title = a.href;
 					a.target = '_blank';
-					a.textContent = 'Reply to ' + mastodon.title.substr( 0, 50 );
+					a.textContent = 'Reply/React to ' + mastodon.title.substr( 0, 50 );
 					li.appendChild(a);
 					friendsSection.appendChild(li);
 				}
 
-				if ( boostatFriendsUrl && mastodon && mastodon.title ) {
+				if ( boostatFriendsUrl && mastodon && mastodon.status ) {
 					li = document.createElement("li");
 					li.classList.add("panel-list-item");
 					a = document.createElement('a');
@@ -103,13 +100,12 @@ document.addEventListener("DOMContentLoaded", () => {
 				friendsSection.appendChild(li);
 
 				postCollections.parentNode.style.display = 'none';
-				console.log(result.postCollections)
 				for (const postCollection of result.postCollections) {
 					li = document.createElement("li");
 					li.classList.add("panel-list-item");
 					form = document.createElement("form");
 					form.classList.add("panel-list-item");
-					form.action = personalHomeUrl + '?user=' + postCollection.id + '&collect-post=' + encodeURIComponent( message.currentUrl );
+					form.action = personalHomeUrl + '?user=' + postCollection.id + '&post-only=1&collect-post=' + encodeURIComponent( message.currentUrl );
 					form.target = '_blank';
 					form.method = 'post';
 
@@ -191,19 +187,18 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	});
 	function detectFeeds() {
+		// console.log( 'detectFeeds', window.location.href );
 		let feeds = {
 			feeds: {},
 			mes: {},
 			mastodon: {},
 			friendsPluginInstalled: false,
-			currentHost: window.location.host,
+			currentHost: window.location.protocol + '//' + window.location.host,
+			currentTitle: document.title,
 			currentUrl: window.location.href,
 			html: document.documentElement.outerHTML
 		};
-		let url = document.querySelector("link[rel='canonical']");
-		if ( url && url.href ) {
-				feeds.currentUrl = url.href;
-		}
+		let url = window.location.href
 
 		document.querySelectorAll("link[rel='alternate']").forEach( (elem) => {
 			let type_attr = elem.getAttribute('type');
@@ -221,13 +216,17 @@ document.addEventListener("DOMContentLoaded", () => {
 				}
 			}
 			if (type.includes('application/activity+json')) {
-				let url = elem.href;
 				if (url) {
 					try {
 						feeds.mastodon.name = document.querySelector('meta[property="og:title"]').getAttribute('content');
 						feeds.mastodon.username = document.querySelector('meta[property="profile:username"]').getAttribute('content');
 						feeds.mastodon.title = document.querySelector('title').textContent;
 						feeds.mastodon.url = url;
+						feeds.mastodon.status = false;
+						if ( url.match( /\/\d+\/?$/ ) ) {
+							feeds.mastodon.status = url;
+						}
+						console.log( feeds.mastodon );
 					} catch (e){
 					}
 				}
@@ -249,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				feeds.friendsPluginInstalled = url.replace( /wp-json\/friends\/v\d/, '' );
 			}
 		});
-
+		// console.log( feeds );
 		return feeds;
 	}
 });
