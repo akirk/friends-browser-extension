@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
 			func: detectFeeds
 		},
 		(results) => {
-			console.log( results );
 			const feedList = document.querySelector('#feedList ul');
 			const postCollections = document.querySelector('#postCollections ul');
 			const meList = document.querySelector('#meList ul');
@@ -18,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			if ( ! feeds ) {
 				return;
 			}
-			const mastodon = message.mastodon;
+			const activitypub = message.activitypub;
 			let a, li;
 			li = document.createElement("li");
 			li.classList.add("panel-list-item");
@@ -41,9 +40,9 @@ document.addEventListener("DOMContentLoaded", () => {
 				const personalFriendsUrl = result.personalFriendsUrl;
 				let replytoFriendsUrl = false;
 				let boostatFriendsUrl = false;
-				if ( Object.keys(mastodon).length > 0 ) {
-					replytoFriendsUrl = personalFriendsUrl + '/type/status/?in_reply_to=' + encodeURIComponent( message.currentUrl );
-					boostatFriendsUrl = personalFriendsUrl + '/type/status/?boost=' + encodeURIComponent( message.currentUrl );
+				if ( activitypub.url ) {
+					replytoFriendsUrl = personalFriendsUrl + '/type/status/?in_reply_to=' + encodeURIComponent( activitypub.url );
+					boostatFriendsUrl = personalFriendsUrl + '/type/status/?boost=' + encodeURIComponent( activitypub.url );
 				}
 				document.getElementById('friendsHeader').textContent = personalHomeUrl.replace( /https?:\/\//, '' ).replace( /\/$/, '' );
 				friendsSection.innerHTML = '';
@@ -52,38 +51,40 @@ document.addEventListener("DOMContentLoaded", () => {
 				a = document.createElement('a');
 				a.href = addFriendUrl;
 				if ( feeds.friendsPluginInstalled ) {
-					a.textContent = 'Add ' + message.currentTitle.substr( 0, 50 ) + ' as a friend';
-				} else if ( mastodon && mastodon.username ) {
-					a.textContent = 'Follow ' + mastodon.username;
-					a.href = personalHomeUrl + '?add-friend=' + encodeURIComponent( '@' + mastodon.username );
+					a.textContent = 'Add ' + (message.name || message.currentTitle).substr( 0, 50 ) + ' as a friend';
+				} else if ( activitypub && activitypub.mastodon_username ) {
+					a.textContent = 'Follow ' + activitypub.mastodon_username;
+					a.href = personalHomeUrl + '?add-friend=' + encodeURIComponent( '@' + activitypub.mastodon_username );
+				} else if ( activitypub && message.name ) {
+					a.textContent = 'Follow ' + message.name;
 				} else {
-					a.textContent = 'Subscribe ' + message.currentTitle.substr( 0, 50 );
+					a.textContent = 'Subscribe ' + (message.name || message.currentTitle).substr( 0, 50 );
 				}
 				a.title = a.href;
 				a.target = '_blank';
 				li.appendChild(a);
 				friendsSection.appendChild(li);
 
-				if ( replytoFriendsUrl && mastodon && mastodon.status ) {
+				if ( replytoFriendsUrl && activitypub ) {
 					li = document.createElement("li");
 					li.classList.add("panel-list-item");
 					a = document.createElement('a');
 					a.href = replytoFriendsUrl;
 					a.title = a.href;
 					a.target = '_blank';
-					a.textContent = 'Reply/React to ' + mastodon.title.substr( 0, 50 );
+					a.textContent = 'Reply/React to ' + activitypub.title.substr( 0, 50 );
 					li.appendChild(a);
 					friendsSection.appendChild(li);
 				}
 
-				if ( boostatFriendsUrl && mastodon && mastodon.status ) {
+				if ( boostatFriendsUrl && activitypub ) {
 					li = document.createElement("li");
 					li.classList.add("panel-list-item");
 					a = document.createElement('a');
 					a.href = boostatFriendsUrl;
 					a.title = a.href;
 					a.target = '_blank';
-					a.textContent = 'Boost ' + mastodon.title.substr( 0, 50 );
+					a.textContent = 'Boost ' + activitypub.title.substr( 0, 50 );
 					li.appendChild(a);
 					friendsSection.appendChild(li);
 				}
@@ -191,14 +192,18 @@ document.addEventListener("DOMContentLoaded", () => {
 		let feeds = {
 			feeds: {},
 			mes: {},
-			mastodon: {},
+			activitypub: {},
 			friendsPluginInstalled: false,
 			currentHost: window.location.protocol + '//' + window.location.host,
 			currentTitle: document.title,
+			name: // microformats h-card name
+				document.querySelector('.h-card .p-name') ?
+				document.querySelector('.h-card .p-name').textContent.replace(/^\s*/g, '' ).replace(/\s*$/g, '' )  : null,
+
 			currentUrl: window.location.href,
 			html: document.documentElement.outerHTML
 		};
-		let url = window.location.href
+		let url = window.location.href;
 
 		document.querySelectorAll("link[rel='alternate']").forEach( (elem) => {
 			let type_attr = elem.getAttribute('type');
@@ -218,16 +223,24 @@ document.addEventListener("DOMContentLoaded", () => {
 			if (type.includes('application/activity+json')) {
 				if (url) {
 					try {
-						feeds.mastodon.name = document.querySelector('meta[property="og:title"]').getAttribute('content');
-						feeds.mastodon.username = document.querySelector('meta[property="profile:username"]').getAttribute('content');
-						feeds.mastodon.title = document.querySelector('title').textContent;
-						feeds.mastodon.url = url;
-						feeds.mastodon.status = false;
-						if ( url.match( /\/\d+\/?$/ ) ) {
-							feeds.mastodon.status = url;
+						const og_title = document.querySelector('meta[property="og:title"]');
+						if ( og_title ) {
+							feeds.activitypub.name = og_title.getAttribute('content');
 						}
-						console.log( feeds.mastodon );
+						feeds.activitypub.title = document.querySelector('title').textContent;
+						feeds.activitypub.url = elem.getAttribute('href');
+
+						const username = document.querySelector('meta[property="profile:username"]');
+						if ( username ) {
+							feeds.activitypub.mastodon_username = username.getAttribute('content');
+							feeds.activitypub.url = false;
+							if ( url.match( /\/\d+\/?$/ ) ) {
+								feeds.activitypub.url = url;
+							}
+						}
+						console.log( 'activitypub', feeds.activitypub );
 					} catch (e){
+						console.log( 'Error',e );
 					}
 				}
 			}
@@ -248,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				feeds.friendsPluginInstalled = url.replace( /wp-json\/friends\/v\d/, '' );
 			}
 		});
-		// console.log( feeds );
+		console.log( feeds );
 		return feeds;
 	}
 });
