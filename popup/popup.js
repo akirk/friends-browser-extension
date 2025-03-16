@@ -46,6 +46,23 @@ document.addEventListener("DOMContentLoaded", () => {
 				}
 				document.getElementById('friendsHeader').textContent = personalHomeUrl.replace( /https?:\/\//, '' ).replace( /\/$/, '' );
 				friendsSection.innerHTML = '';
+				postCollections.parentNode.style.display = 'none';
+
+				if ( message.currentHost == personalHomeUrl ) {
+					document.getElementById('friendsHeader').textContent = 'Welcome Home!';
+					const li = document.createElement("li");
+					li.classList.add("panel-list-item");
+					const a = document.createElement('a');
+					a.href = personalFriendsUrl;
+					a.title = a.href;
+					a.target = 'self';
+					a.textContent = 'Visit your own Friends page';
+					li.appendChild(a);
+					friendsSection.appendChild(li);
+					return;
+				}
+
+
 				li = document.createElement("li");
 				li.classList.add("panel-list-item");
 				a = document.createElement('a');
@@ -55,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				} else if ( activitypub && activitypub.mastodon_username ) {
 					a.textContent = 'Follow ' + activitypub.mastodon_username;
 					a.href = personalHomeUrl + '?add-friend=' + encodeURIComponent( '@' + activitypub.mastodon_username );
-				} else if ( activitypub && message.name ) {
+				} else if ( activitypub && activitypub.url && message.name ) {
 					a.textContent = 'Follow ' + message.name;
 				} else {
 					a.textContent = 'Subscribe ' + (message.name || message.currentTitle).substr( 0, 50 );
@@ -95,12 +112,11 @@ document.addEventListener("DOMContentLoaded", () => {
 				a.href = personalFriendsUrl;
 				a.title = a.href;
 				a.target = '_blank';
-				a.textContent = 'Your Friends\' Latest Posts';
+				a.textContent = 'Visit your own Friends page';
 
 				li.appendChild(a);
 				friendsSection.appendChild(li);
 
-				postCollections.parentNode.style.display = 'none';
 				for (const postCollection of result.postCollections) {
 					li = document.createElement("li");
 					li.classList.add("panel-list-item");
@@ -118,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 					a = document.createElement('button');
 					a.title = form.action;
-					a.textContent = 'Add to ' + postCollection.name;
+					a.textContent = 'Save this page to ' + postCollection.name;
 
 					form.appendChild(a);
 					li.appendChild(form);
@@ -196,13 +212,18 @@ document.addEventListener("DOMContentLoaded", () => {
 			friendsPluginInstalled: false,
 			currentHost: window.location.protocol + '//' + window.location.host,
 			currentTitle: document.title,
-			name: // microformats h-card name
-				document.querySelector('.h-card .p-name') ?
-				document.querySelector('.h-card .p-name').textContent.replace(/^\s*/g, '' ).replace(/\s*$/g, '' )  : null,
-
+			name: null,
 			currentUrl: window.location.href,
 			html: document.documentElement.outerHTML
 		};
+		if ( document.querySelector('meta[property="og:site_name"]') ) {
+			feeds.name = document.querySelector('meta[property="og:site_name"]').getAttribute('content');
+		} else if ( document.querySelector('.h-card .p-name') ) {
+			feeds.name = document.querySelector('.h-card .p-name').textContent;
+		}
+		if ( feeds.name ) {
+			feeds.name = feeds.name.replace(/^\s*/g, '' ).replace(/\s*$/g, '' );
+		}
 		let url = window.location.href;
 
 		document.querySelectorAll("link[rel='alternate']").forEach( (elem) => {
