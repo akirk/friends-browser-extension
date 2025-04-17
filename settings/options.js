@@ -26,6 +26,19 @@ function saveOptions(e) {
 	}
 }
 
+function updateLink(e) {
+	const url = document.getElementById("personalHomeUrl").value;
+	const save = {
+		personalHomeUrl: url
+	};
+	var apiKey = document.getElementById("apiKey").value;
+	if ( apiKey ) {
+		save.apiKey = apiKey;
+	}
+	getVersion( save );
+
+}
+
 function onError(error) {
 	console.log(`Error: ${error}`);
 	document.getElementById("note").style.display = 'block';
@@ -144,4 +157,5 @@ document.addEventListener("DOMContentLoaded", restoreOptions);
 
 // save when clicking the button #save
 document.querySelector("#save").addEventListener("click", saveOptions);
+document.querySelector("#personalHomeUrl").addEventListener("keyup", updateLink);
 
