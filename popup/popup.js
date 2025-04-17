@@ -67,7 +67,7 @@ document.addEventListener( "DOMContentLoaded", () => {
 					li.classList.add( "panel-list-item" );
 					a = document.createElement( 'a' );
 					a.href = addFriendUrl;
-					if ( feeds.friendsPluginInstalled ) {
+					if ( message.friendsPluginInstalled ) {
 						a.textContent = 'Add ' + ( message.name || message.currentTitle ).substr( 0, 50 ) + ' as a friend';
 					} else if ( activitypub && activitypub.mastodon_username ) {
 						a.textContent = 'Follow ' + activitypub.mastodon_username;
@@ -76,6 +76,9 @@ document.addEventListener( "DOMContentLoaded", () => {
 						a.textContent = 'Follow ' + message.name;
 					} else {
 						a.textContent = 'Subscribe ' + ( message.name || message.currentTitle ).substr( 0, 50 );
+						if ( message.currentHost.match( /youtube\.com/ ) && Object.keys( feeds ).length > 0 ) {
+							a.href = personalHomeUrl + '?add-friend=' + encodeURIComponent( Object.keys( feeds )[ 0 ] );
+						}
 					}
 					a.title = a.href;
 					a.target = '_blank';
