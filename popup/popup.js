@@ -65,10 +65,10 @@ document.addEventListener( "DOMContentLoaded", () => {
 						const li = document.createElement( "li" );
 						li.classList.add( "panel-list-item" );
 						const a = document.createElement( 'a' );
-						a.href = personalFriendsUrl;
+						a.href = personalHomeUrl.replace( /\/$/, '' ) + '/wp-admin/admin.php?page=friends-settings';
 						a.title = a.href;
-						a.target = 'self';
-						a.textContent = 'Visit your own Friends page';
+						a.target = '_blank';
+						a.textContent = 'Friends Settings';
 						li.appendChild( a );
 						friendsSection.appendChild( li );
 						return;
