@@ -1,5 +1,6 @@
 document.addEventListener( "DOMContentLoaded", () => {
 	const browser = window.browser || window.chrome;
+	document.getElementById( 'settingsLink' ).href = browser.runtime.getURL( 'settings/options.html' );
 	browser.tabs.query( { active: true, currentWindow: true }, ( tabs ) => {
 		const activeTab = tabs[ 0 ];
 		browser.scripting.executeScript(
@@ -10,13 +11,13 @@ document.addEventListener( "DOMContentLoaded", () => {
 			( results ) => {
 				if ( ! results || ! results[ 0 ] ) {
 					document.querySelectorAll( '.panel-section-list' ).forEach( ( el ) => el.style.display = 'none' );
-					const header = document.querySelector( 'header .text-section-header' );
-					header.textContent = 'Cannot run on this page. ';
-					const a = document.createElement( 'a' );
-					a.href = browser.runtime.getURL( 'settings/options.html' );
-					a.target = '_blank';
-					a.textContent = 'Settings';
-					header.appendChild( a );
+					const msg = document.createElement( 'div' );
+					msg.className = 'panel-section panel-section-list';
+					const item = document.createElement( 'div' );
+					item.className = 'panel-list-item disabled';
+					item.textContent = 'Cannot run on this page.';
+					msg.appendChild( item );
+					document.body.appendChild( msg );
 					return;
 				}
 				const feedList = document.querySelector( '#feedList ul' );
