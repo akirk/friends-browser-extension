@@ -10,11 +10,14 @@ function saveOptions(e) {
 		const save = {
 			personalHomeUrl: url,
 			baseUrl: null,
+			postCollections: [],
 		};
 		var apiKey = document.getElementById("apiKey").value;
 		if ( apiKey ) {
 			save.apiKey = apiKey;
 		}
+		document.getElementById("postCollectionsHolder").style.display = 'none';
+		document.getElementById("postCollections").textContent = '';
 		browser.storage.sync.set( save );
 		getVersion( save );
 
@@ -103,7 +106,7 @@ function getVersion( result ) {
 
 			if ( json.post_collections ) {
 				document.getElementById("postCollectionsHolder").style.display = 'block';
-				document.getElementById("postCollections").innerHTML = '';
+				document.getElementById("postCollections").textContent = '';
 				for ( let i = 0; i < json.post_collections.length; i++ ) {
 					const collection = json.post_collections[i];
 					const li = document.createElement('li');
@@ -115,6 +118,9 @@ function getVersion( result ) {
 				}
 				result.postCollections = json.post_collections;
 				browser.storage.sync.set( result );
+			} else if ( result.apiKey ) {
+				document.getElementById("note").style.display = 'block';
+				document.getElementById("note").textContent = 'Key not accepted — post collections unavailable.';
 			}
 
 		} );
