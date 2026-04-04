@@ -120,10 +120,10 @@ document.addEventListener( "DOMContentLoaded", () => {
 					li.appendChild( a );
 					friendsSection.appendChild( li );
 
-					for ( const postCollection of result.postCollections ) {
+					for ( const postCollection of ( result.postCollections || [] ) ) {
 						li = document.createElement( "li" );
 						li.classList.add( "panel-list-item" );
-						form = document.createElement( "form" );
+						const form = document.createElement( "form" );
 						form.classList.add( "panel-list-item" );
 						form.action = personalHomeUrl + '?user=' + postCollection.id + '&post-only=1&collect-post=' + encodeURIComponent( message.currentUrl );
 						form.target = '_blank';
@@ -150,7 +150,7 @@ document.addEventListener( "DOMContentLoaded", () => {
 				const mes = feeds.mes;
 
 				meList.parentNode.style.display = 'none';
-				for ( me_url in mes ) {
+				for ( const me_url in mes ) {
 					if ( mes.hasOwnProperty( me_url ) ) {
 
 						li = document.createElement( "li" );
@@ -169,7 +169,7 @@ document.addEventListener( "DOMContentLoaded", () => {
 				}
 
 				feedList.parentNode.style.display = 'none';
-				for ( feed_url in feeds ) {
+				for ( const feed_url in feeds ) {
 					if ( feeds.hasOwnProperty( feed_url ) ) {
 
 						li = document.createElement( "li" );
@@ -263,7 +263,6 @@ document.addEventListener( "DOMContentLoaded", () => {
 								feeds.activitypub.url = url;
 							}
 						}
-						console.log( 'activitypub', feeds.activitypub );
 					} catch ( e ) {
 						console.log( 'Error', e );
 					}
@@ -286,7 +285,6 @@ document.addEventListener( "DOMContentLoaded", () => {
 				feeds.friendsPluginInstalled = url.replace( /wp-json\/friends\/v\d/, '' );
 			}
 		} );
-		console.log( feeds );
 		return feeds;
 	}
 } );
