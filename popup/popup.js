@@ -62,15 +62,27 @@ document.addEventListener( "DOMContentLoaded", () => {
 
 					if ( message.currentHost == personalHomeUrl ) {
 						document.getElementById( 'friendsHeader' ).textContent = 'Welcome Home!';
-						const li = document.createElement( "li" );
-						li.classList.add( "panel-list-item" );
-						const a = document.createElement( 'a' );
-						a.href = personalHomeUrl.replace( /\/$/, '' ) + '/wp-admin/admin.php?page=friends-settings';
-						a.title = a.href;
-						a.target = '_blank';
-						a.textContent = 'Friends Settings';
-						li.appendChild( a );
-						friendsSection.appendChild( li );
+
+						const friendsLi = document.createElement( "li" );
+						friendsLi.classList.add( "panel-list-item" );
+						const friendsA = document.createElement( 'a' );
+						friendsA.href = personalFriendsUrl;
+						friendsA.title = friendsA.href;
+						friendsA.target = '_blank';
+						friendsA.textContent = 'Visit your Friends page';
+						friendsLi.appendChild( friendsA );
+						friendsSection.appendChild( friendsLi );
+
+						const settingsLi = document.createElement( "li" );
+						settingsLi.classList.add( "panel-list-item" );
+						const settingsA = document.createElement( 'a' );
+						settingsA.href = personalHomeUrl.replace( /\/$/, '' ) + '/wp-admin/admin.php?page=friends-settings';
+						settingsA.title = settingsA.href;
+						settingsA.target = '_blank';
+						settingsA.textContent = 'Friends Settings';
+						settingsLi.appendChild( settingsA );
+						friendsSection.appendChild( settingsLi );
+
 						return;
 					}
 
