@@ -10,14 +10,14 @@ function saveOptions(e) {
 		const save = {
 			personalHomeUrl: url,
 			baseUrl: null,
-			postCollections: [],
+			actions: [],
 		};
 		var apiKey = document.getElementById("apiKey").value;
 		if ( apiKey ) {
 			save.apiKey = apiKey;
 		}
-		document.getElementById("postCollectionsHolder").style.display = 'none';
-		document.getElementById("postCollections").textContent = '';
+		document.getElementById("actionsHolder").style.display = 'none';
+		document.getElementById("actionsList").textContent = '';
 		browser.storage.sync.set( save );
 		getVersion( save );
 
@@ -104,23 +104,24 @@ function getVersion( result ) {
 			document.getElementById("keyInput").style.display = 'flex';
 			result.personalFriendsUrl = json.friends_url;
 
-			if ( json.post_collections ) {
-				document.getElementById("postCollectionsHolder").style.display = 'block';
-				document.getElementById("postCollections").textContent = '';
-				for ( let i = 0; i < json.post_collections.length; i++ ) {
-					const collection = json.post_collections[i];
+			const actions = json.actions || ( json.post_collections || [] ).map( ( c ) => ( {
+				name: c.name,
+				url: c.url,
+			} ) );
+
+			if ( actions.length ) {
+				document.getElementById("actionsHolder").style.display = 'block';
+				document.getElementById("actionsList").textContent = '';
+				for ( const action of actions ) {
 					const li = document.createElement('li');
-					const a = document.createElement('a');
-					a.href = collection.url;
-					a.textContent = collection.name;
-					li.appendChild(a);
-					document.getElementById("postCollections").appendChild(li);
+					li.textContent = action.name;
+					document.getElementById("actionsList").appendChild(li);
 				}
-				result.postCollections = json.post_collections;
+				result.actions = actions;
 				browser.storage.sync.set( result );
 			} else if ( result.apiKey ) {
 				document.getElementById("note").style.display = 'block';
-				document.getElementById("note").textContent = 'Key not accepted — post collections unavailable.';
+				document.getElementById("note").textContent = 'Key not accepted — no actions available.';
 			}
 
 		} );
@@ -155,7 +156,7 @@ function restoreOptions() {
 			personalFriendsUrl: null,
 			apiKey: null,
 			baseUrl: null,
-			postCollections: null
+			actions: [],
 		});
 		getting.then(onResult, onError);
 	} catch (e) {

@@ -21,7 +21,7 @@ document.addEventListener( "DOMContentLoaded", () => {
 					return;
 				}
 				const feedList = document.querySelector( '#feedList ul' );
-				const postCollections = document.querySelector( '#postCollections ul' );
+				const actionsList = document.querySelector( '#actions ul' );
 				const meList = document.querySelector( '#meList ul' );
 				const friendsSection = document.querySelector( '#friendsSection ul' );
 				const message = results[ 0 ].result;
@@ -58,7 +58,7 @@ document.addEventListener( "DOMContentLoaded", () => {
 					}
 					document.getElementById( 'friendsHeader' ).textContent = personalHomeUrl.replace( /https?:\/\//, '' ).replace( /\/$/, '' );
 					friendsSection.innerHTML = '';
-					postCollections.parentNode.style.display = 'none';
+					actionsList.parentNode.style.display = 'none';
 
 					if ( message.currentHost == personalHomeUrl ) {
 						document.getElementById( 'friendsHeader' ).textContent = 'Welcome Home!';
@@ -144,30 +144,51 @@ document.addEventListener( "DOMContentLoaded", () => {
 					li.appendChild( a );
 					friendsSection.appendChild( li );
 
-					for ( const postCollection of ( result.postCollections || [] ) ) {
+					const actions = result.actions || ( result.postCollections || [] ).map( ( c ) => ( {
+						name: 'Save this page to ' + c.name,
+						url: personalHomeUrl + '?user=' + c.id + '&post-only=1&collect-post={current_url}',
+						method: 'POST',
+						fields: { body: '{page_html}' },
+					} ) );
+
+					for ( const action of actions ) {
 						li = document.createElement( "li" );
 						li.classList.add( "panel-list-item" );
-						const form = document.createElement( "form" );
-						form.classList.add( "panel-list-item" );
-						form.action = personalHomeUrl + '?user=' + postCollection.id + '&post-only=1&collect-post=' + encodeURIComponent( message.currentUrl );
-						form.target = '_blank';
-						form.method = 'post';
-						form.enctype = 'application/x-www-form-urlencoded';
 
-						const input = document.createElement( 'input' );
-						input.type = 'hidden';
-						input.name = 'body';
-						input.value = message.html;
-						form.appendChild( input );
+						if ( action.method === 'POST' ) {
+							const form = document.createElement( "form" );
+							form.classList.add( "panel-list-item" );
+							form.action = action.url.replace( '{current_url}', encodeURIComponent( message.currentUrl ) );
+							form.target = '_blank';
+							form.method = 'post';
+							form.enctype = 'application/x-www-form-urlencoded';
 
-						a = document.createElement( 'button' );
-						a.title = form.action;
-						a.textContent = 'Save this page to ' + postCollection.name;
+							for ( const [ name, value ] of Object.entries( action.fields || {} ) ) {
+								const input = document.createElement( 'input' );
+								input.type = 'hidden';
+								input.name = name;
+								input.value = value
+									.replace( '{current_url}', message.currentUrl )
+									.replace( '{page_html}', message.html );
+								form.appendChild( input );
+							}
 
-						form.appendChild( a );
-						li.appendChild( form );
-						postCollections.appendChild( li );
-						postCollections.parentNode.style.display = 'block';
+							const button = document.createElement( 'button' );
+							button.title = form.action;
+							button.textContent = action.name;
+							form.appendChild( button );
+							li.appendChild( form );
+						} else {
+							a = document.createElement( 'a' );
+							a.href = action.url.replace( '{current_url}', encodeURIComponent( message.currentUrl ) );
+							a.title = a.href;
+							a.target = '_blank';
+							a.textContent = action.name;
+							li.appendChild( a );
+						}
+
+						actionsList.appendChild( li );
+						actionsList.parentNode.style.display = 'block';
 					}
 				} );
 
