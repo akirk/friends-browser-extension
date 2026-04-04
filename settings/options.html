@@ -8,59 +8,176 @@
   <style>
     body {
       font-family: sans-serif;
+      font-size: .9em;
+      margin: 0;
+      padding: 1.5em;
+      max-width: 480px;
+      color: light-dark( #222, #ddd );
+      background: light-dark( #f5f5f5, #1a1a1a );
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: .6em;
+      margin-bottom: 1.5em;
+    }
+
+    header img {
+      width: 32px;
+      height: 32px;
+    }
+
+    header h1 {
+      font-size: 1.2em;
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .card {
+      background: light-dark( #fff, #2a2a2a );
+      border: 1px solid light-dark( #ddd, #444 );
+      border-radius: 8px;
+      padding: 1em 1.2em;
+      margin-bottom: 1em;
+    }
+
+    .card p {
+      margin: 0 0 1em;
+      color: light-dark( #555, #aaa );
+      line-height: 1.5;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: .3em;
+      margin-bottom: .8em;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: .85em;
+      color: light-dark( #444, #bbb );
+    }
+
+    input[type="url"],
+    input[type="text"] {
+      padding: .5em .7em;
+      border: 1px solid light-dark( #ccc, #555 );
+      border-radius: 5px;
+      font-size: 1em;
+      background: light-dark( #fff, #333 );
+      color: light-dark( #222, #eee );
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: light-dark( #888, #999 );
+    }
+
+    .field-hint {
       font-size: .8em;
+      color: light-dark( #888, #888 );
+    }
+
+    button#save {
+      padding: .5em 1.2em;
+      background: light-dark( #333, #ddd );
+      color: light-dark( #fff, #111 );
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: .4em;
+    }
+
+    button#save:hover {
+      background: light-dark( #000, #fff );
     }
 
     #note {
-      background-color: #f9f9f9;
-      padding: 10px;
+      margin-top: .8em;
+      padding: .5em .7em;
       border-radius: 5px;
-      margin-bottom: 10px;
+      background: light-dark( #eef, #223 );
+      color: light-dark( #336, #aac );
       display: none;
     }
-    form {
-      margin-top: 1em;
-    }
-    #apiKey {
-      width: 20em;
-    }
+
     #site-info {
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      margin-top: 1em;
-      padding: 0 .5em;
+      display: flex;
+      flex-direction: column;
+      gap: .3em;
     }
 
+    #friendsVersion {
+      color: light-dark( #555, #aaa );
+      font-size: .85em;
+    }
+
+    #postCollectionsHolder {
+      display: none;
+    }
+
+    #postCollectionsHolder p {
+      font-weight: bold;
+      margin: .5em 0 .2em;
+      font-size: .85em;
+      color: light-dark( #444, #bbb );
+    }
+
+    #postCollections {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #postCollections li a {
+      color: light-dark( #333, #ccc );
+      font-size: .85em;
+    }
   </style>
 </head>
 
 <body>
-  <form>
-    <p id="note"></p>
-    <p>This Browser extension is a companion to your personal WordPress with the <a href="https://wordpress.org/plugins/friends/" target="_blank">Friends Plugin</a> installed.</p>
-    <p>It adds a toolbar icon <img id="icon" src=""> which then offers to interact with the current page and your own WordPress site.</p>
-    <table>
-      <tr>
-        <td><label for="personalHomeUrl" class="setting browser-style">Enter your own WordPress URL:</label></td>
-        <td><input type="url" id="personalHomeUrl" class="validate" /></td>
-      </tr>
-      <tr id="keyInput" style="display: none">
-        <td><label for="apiKey" class="setting browser-style">Enter your <a href="" id="settingsUrl" target="_blank">Browser Extension Key</a>:</label></td>
-        <td><input type="text" id="apiKey" class="validate" /></td>
-      </tr>
-    </table>
-    <button id="save">Save</button>
-  </form>
-  <div id="site-info">
-    <p id="friendsVersion"></p>
+  <header>
+    <img id="icon" src="">
+    <h1>Friends</h1>
+  </header>
 
-    <div id="postCollectionsHolder" style="display: none">
-      <p>Post Collections:</p>
+  <div class="card">
+    <p>Companion to your WordPress site with the <a href="https://wordpress.org/plugins/friends/" target="_blank">Friends Plugin</a>. Enter your site URL below to get started.</p>
+    <form>
+      <div class="field">
+        <label for="personalHomeUrl">Your WordPress URL</label>
+        <input type="url" id="personalHomeUrl" placeholder="https://example.com" />
+      </div>
+      <div class="field" id="keyInput" style="display: none">
+        <label for="apiKey">Browser Extension Key (<a href="" id="settingsUrl" target="_blank">find it here</a>)</label>
+        <input type="text" id="apiKey" placeholder="Paste your key here" />
+        <span class="field-hint">Required to save pages to Post Collections.</span>
+      </div>
+      <button id="save" type="button">Save</button>
+      <div id="note"></div>
+    </form>
+  </div>
+
+  <div class="card" id="site-info">
+    <div id="friendsVersion"></div>
+    <div id="postCollectionsHolder">
+      <p>Post Collections</p>
       <ul id="postCollections"></ul>
     </div>
   </div>
-  <script src="options.js"></script>
 
+  <script src="options.js"></script>
 </body>
 
 </html>

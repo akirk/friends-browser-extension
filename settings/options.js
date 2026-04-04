@@ -98,7 +98,7 @@ function getVersion( result ) {
 		fetch(result.baseUrl + '/extension?version=' + extensionVersion, options).then(response => response.json()).then(json => {
 			document.getElementById("friendsVersion").textContent = 'Friends Version: ' + json.version;
 			document.getElementById("settingsUrl").href = json.settings_url;
-			document.getElementById("keyInput").style.display = 'table-row';
+			document.getElementById("keyInput").style.display = 'flex';
 			result.personalFriendsUrl = json.friends_url;
 
 			if ( json.post_collections ) {
