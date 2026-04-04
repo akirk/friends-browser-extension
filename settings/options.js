@@ -120,9 +120,8 @@ function getVersion( result ) {
 function restoreOptions() {
 
 	function onResult(result) {
-		console.log( result );
 		document.getElementById("personalHomeUrl").value = result.personalHomeUrl;
-		document.getElementById("apiKey").value = result.apiKey;
+		document.getElementById("apiKey").value = result.apiKey || '';
 		document.getElementById("personalHomeUrl").focus();
 		try {
 			if ( result.personalHomeUrl ) {
