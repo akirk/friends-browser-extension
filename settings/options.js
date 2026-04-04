@@ -14,6 +14,7 @@ function saveOptions(e) {
 		if ( apiKey ) {
 			save.apiKey = apiKey;
 		}
+		browser.storage.sync.set( save );
 		getVersion( save );
 
 		document.getElementById("note").style.display = 'block';

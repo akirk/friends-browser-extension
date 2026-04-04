@@ -1,3 +1,7 @@
-chrome.runtime.onInstalled.addListener(() => {
-    chrome.runtime.openOptionsPage();
-});
+const browser = globalThis.browser || globalThis.chrome;
+
+browser.runtime.onInstalled.addListener( ( details ) => {
+    if ( details.reason === 'install' ) {
+        browser.runtime.openOptionsPage();
+    }
+} );
