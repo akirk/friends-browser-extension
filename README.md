@@ -22,7 +22,7 @@ If you enter the browser extension key that you can find on your Friends page (l
 
 ## Privacy
 
-This extension does not collect any data on behalf of the developer. All data (your WordPress site URL and API key) is stored locally in your browser and only sent to your own self-hosted WordPress instance. The `data_collection_permissions: []` in the manifest reflects this.
+This extension does not collect any data on behalf of the developer. All data (your WordPress site URL and API key) is stored locally in your browser and only sent to your own self-hosted WordPress instance. The `data_collection_permissions: { required: ["none"] }` in the manifest reflects this.
 
 ## Testing on Firefox Mobile
 
