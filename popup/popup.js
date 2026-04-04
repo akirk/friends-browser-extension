@@ -1,5 +1,6 @@
 document.addEventListener( "DOMContentLoaded", () => {
 	const browser = window.browser || window.chrome;
+	document.getElementById( 'settingsLink' ).href = browser.runtime.getURL( 'settings/options.html' );
 	browser.tabs.query( { active: true, currentWindow: true }, ( tabs ) => {
 		const activeTab = tabs[ 0 ];
 		browser.scripting.executeScript(
@@ -8,6 +9,17 @@ document.addEventListener( "DOMContentLoaded", () => {
 				func: detectFeeds
 			},
 			( results ) => {
+				if ( ! results || ! results[ 0 ] ) {
+					document.querySelectorAll( '.panel-section-list' ).forEach( ( el ) => el.style.display = 'none' );
+					const msg = document.createElement( 'div' );
+					msg.className = 'panel-section panel-section-list';
+					const item = document.createElement( 'div' );
+					item.className = 'panel-list-item disabled';
+					item.textContent = 'Cannot run on this page.';
+					msg.appendChild( item );
+					document.body.appendChild( msg );
+					return;
+				}
 				const feedList = document.querySelector( '#feedList ul' );
 				const postCollections = document.querySelector( '#postCollections ul' );
 				const meList = document.querySelector( '#meList ul' );
@@ -147,7 +159,7 @@ document.addEventListener( "DOMContentLoaded", () => {
 					}
 				} );
 
-				const mes = feeds.mes;
+				const mes = message.feeds.mes;
 
 				meList.parentNode.style.display = 'none';
 				for ( const me_url in mes ) {
@@ -169,8 +181,8 @@ document.addEventListener( "DOMContentLoaded", () => {
 				}
 
 				feedList.parentNode.style.display = 'none';
-				for ( const feed_url in feeds ) {
-					if ( feeds.hasOwnProperty( feed_url ) ) {
+				for ( const feed_url in message.feeds ) {
+					if ( message.feeds.hasOwnProperty( feed_url ) ) {
 
 						li = document.createElement( "li" );
 						li.classList.add( "panel-list-item" );
@@ -179,7 +191,7 @@ document.addEventListener( "DOMContentLoaded", () => {
 						a.title = a.href;
 						a.target = '_blank';
 						a.classList.add( "text" );
-						a.textContent = feeds[ feed_url ];
+						a.textContent = message.feeds[ feed_url ];
 
 						li.appendChild( a );
 						feedList.appendChild( li );
@@ -191,10 +203,6 @@ document.addEventListener( "DOMContentLoaded", () => {
 					elem.addEventListener( 'click', ( event ) => {
 
 						const url = elem.getAttribute( "data-href" );
-						if ( typeof chrome != 'undefined' && typeof browser == 'undefined' ) {
-							browser = chrome;
-						}
-
 						if ( url ) {
 							browser.tabs.create( { url: url } );
 						} else {

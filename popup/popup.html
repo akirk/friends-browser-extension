@@ -10,6 +10,20 @@
 	.panel-section-header {
 		padding: .5em .2em;
 		font-weight: bold;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	#settingsLink {
+		text-decoration: none;
+		color: inherit;
+		opacity: .5;
+		font-size: 1.2em;
+		padding: 0;
+		display: inline;
+	}
+	#settingsLink:hover {
+		opacity: 1;
 	}
 
 	.panel-list-item {
@@ -69,6 +83,7 @@
 <body>
 	<header class="panel-section panel-section-header">
 		<div class="text-section-header">Friends</div>
+		<a id="settingsLink" target="_blank" title="Settings">⚙</a>
 	</header>
 	<div class="panel-section panel-section-list" id='meList'>
 		<div class="panel-list-item disabled">rel=me</div>

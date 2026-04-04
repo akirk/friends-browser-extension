@@ -8,12 +8,14 @@ function saveOptions(e) {
 			url = 'https://' + url;
 		}
 		const save = {
-			personalHomeUrl: url
+			personalHomeUrl: url,
+			baseUrl: null,
 		};
 		var apiKey = document.getElementById("apiKey").value;
 		if ( apiKey ) {
 			save.apiKey = apiKey;
 		}
+		browser.storage.sync.set( save );
 		getVersion( save );
 
 		document.getElementById("note").style.display = 'block';
@@ -55,9 +57,14 @@ function getVersion( result ) {
 		try {
 			const parser = new DOMParser();
 			const doc = parser.parseFromString(text, 'text/html');
-			const link = doc.querySelector('link[rel="friends-base-url"]');
-			if (link) {
-				base = link.getAttribute('href');
+			const friendsLink = doc.querySelector('link[rel="friends-base-url"]');
+			if (friendsLink) {
+				base = friendsLink.getAttribute('href');
+			} else {
+				const wpApiLink = doc.querySelector('link[rel="https://api.w.org/"]');
+				if (wpApiLink) {
+					base = wpApiLink.getAttribute('href') + 'friends/v1';
+				}
 			}
 		} catch (e) {
 			console.log('Error parsing base url', e);
