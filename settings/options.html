@@ -124,13 +124,7 @@
 
     #actionsHolder {
       display: none;
-    }
-
-    #actionsHolder p {
-      font-weight: bold;
-      margin: .5em 0 .2em;
-      font-size: .85em;
-      color: light-dark( #444, #bbb );
+      margin-top: 1em;
     }
 
     #actionsList {
@@ -142,6 +136,92 @@
     #actionsList li {
       color: light-dark( #333, #ccc );
       font-size: .85em;
+    }
+
+    #actionsList .category-header {
+      font-weight: bold;
+      margin-top: 0.5em;
+    }
+
+    #actionsList .category-header:first-child {
+      margin-top: 0;
+    }
+
+    #actionsList li label {
+      display: flex;
+      align-items: center;
+      gap: 0.3em;
+      cursor: pointer;
+    }
+
+    #actionsList li input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    #actionsList .category-item {
+      padding-left: 1em;
+    }
+
+    .action-view {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .action-view label {
+      display: flex;
+      align-items: center;
+      gap: 0.3em;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .action-edit-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: light-dark( #aaa, #666 );
+      font-size: 0.75em;
+      padding: 0 0.2em;
+      visibility: hidden;
+    }
+
+    .category-item:hover .action-edit-btn {
+      visibility: visible;
+    }
+
+    .action-edit {
+      display: flex;
+      gap: 0.3em;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 0.2em 0 0.2em 1.4em;
+    }
+
+    .action-edit input[type="text"] {
+      font-size: 0.85em;
+      padding: 0.15em 0.4em;
+      border: 1px solid light-dark( #ccc, #555 );
+      border-radius: 3px;
+      background: light-dark( #fff, #333 );
+      color: light-dark( #222, #eee );
+      width: auto;
+    }
+
+    .action-edit button {
+      font-size: 0.75em;
+      padding: 0.15em 0.5em;
+      border: 1px solid light-dark( #ccc, #555 );
+      border-radius: 3px;
+      cursor: pointer;
+      background: light-dark( #f0f0f0, #3a3a3a );
+      color: light-dark( #222, #eee );
+    }
+
+    .action-save-btn {
+      background: light-dark( #333, #ccc ) !important;
+      color: light-dark( #fff, #111 ) !important;
+      border-color: transparent !important;
     }
   </style>
 </head>
@@ -172,7 +252,6 @@
   <div class="card" id="site-info">
     <div id="friendsVersion"></div>
     <div id="actionsHolder">
-      <p>Actions</p>
       <ul id="actionsList"></ul>
     </div>
   </div>

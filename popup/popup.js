@@ -151,44 +151,79 @@ document.addEventListener( "DOMContentLoaded", () => {
 						fields: { body: '{page_html}' },
 					} ) );
 
+					const hiddenActions = new Set( result.hiddenActions || [] );
+					const actionOverrides = result.actionOverrides || {};
+					const categorized = new Map();
 					for ( const action of actions ) {
-						li = document.createElement( "li" );
-						li.classList.add( "panel-list-item" );
+						if ( hiddenActions.has( action.url ) ) continue;
+						const override = actionOverrides[ action.url ] || {};
+						const effectiveName = override.name !== undefined ? override.name : action.name;
+						const effectiveCategory = override.category !== undefined ? override.category : ( action.category || '' );
+						const effective = { ...action, name: effectiveName, category: effectiveCategory };
+						if ( ! categorized.has( effectiveCategory ) ) categorized.set( effectiveCategory, [] );
+						categorized.get( effectiveCategory ).push( effective );
+					}
 
-						if ( action.method === 'POST' ) {
-							const form = document.createElement( "form" );
-							form.classList.add( "panel-list-item" );
-							form.action = action.url.replace( '{current_url}', encodeURIComponent( message.currentUrl ) );
-							form.target = '_blank';
-							form.method = 'post';
-							form.enctype = 'application/x-www-form-urlencoded';
+					const sortedCategories = [ ...categorized.keys() ].sort( ( a, b ) => {
+						if ( a === '' ) return 1;
+						if ( b === '' ) return -1;
+						return a.localeCompare( b );
+					} );
 
-							for ( const [ name, value ] of Object.entries( action.fields || {} ) ) {
-								const input = document.createElement( 'input' );
-								input.type = 'hidden';
-								input.name = name;
-								input.value = value
-									.replace( '{current_url}', message.currentUrl )
-									.replace( '{page_html}', message.html );
-								form.appendChild( input );
+					if ( sortedCategories.length > 0 ) {
+						const actionsContainer = actionsList.parentNode;
+						actionsContainer.replaceChildren();
+
+						for ( const category of sortedCategories ) {
+							const categoryActions = categorized.get( category ).sort( ( a, b ) => a.name.localeCompare( b.name ) );
+							const header = document.createElement( 'div' );
+							header.className = 'panel-list-item disabled';
+							header.textContent = category || 'Actions';
+							actionsContainer.appendChild( header );
+
+							const ul = document.createElement( 'ul' );
+							for ( const action of categoryActions ) {
+								li = document.createElement( 'li' );
+								li.classList.add( 'panel-list-item' );
+
+								if ( action.method === 'POST' ) {
+									const form = document.createElement( 'form' );
+									form.classList.add( 'panel-list-item' );
+									form.action = action.url.replace( '{current_url}', encodeURIComponent( message.currentUrl ) );
+									form.target = '_blank';
+									form.method = 'post';
+									form.enctype = 'application/x-www-form-urlencoded';
+
+									for ( const [ name, value ] of Object.entries( action.fields || {} ) ) {
+										const input = document.createElement( 'input' );
+										input.type = 'hidden';
+										input.name = name;
+										input.value = value
+											.replace( '{current_url}', message.currentUrl )
+											.replace( '{page_html}', message.html );
+										form.appendChild( input );
+									}
+
+									const button = document.createElement( 'button' );
+									button.title = form.action;
+									button.textContent = action.name;
+									form.appendChild( button );
+									li.appendChild( form );
+								} else {
+									a = document.createElement( 'a' );
+									a.href = action.url.replace( '{current_url}', encodeURIComponent( message.currentUrl ) );
+									a.title = a.href;
+									a.target = '_blank';
+									a.textContent = action.name;
+									li.appendChild( a );
+								}
+
+								ul.appendChild( li );
 							}
-
-							const button = document.createElement( 'button' );
-							button.title = form.action;
-							button.textContent = action.name;
-							form.appendChild( button );
-							li.appendChild( form );
-						} else {
-							a = document.createElement( 'a' );
-							a.href = action.url.replace( '{current_url}', encodeURIComponent( message.currentUrl ) );
-							a.title = a.href;
-							a.target = '_blank';
-							a.textContent = action.name;
-							li.appendChild( a );
+							actionsContainer.appendChild( ul );
 						}
 
-						actionsList.appendChild( li );
-						actionsList.parentNode.style.display = 'block';
+						actionsContainer.style.display = 'block';
 					}
 				} );
 
