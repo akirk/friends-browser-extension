@@ -1,3 +1,227 @@
+function replaceActionPlaceholders( value, message, encode = false ) {
+	if ( typeof value !== 'string' ) {
+		return value;
+	}
+
+	const replacements = {
+		current_url: message.currentUrl,
+		page_url: message.currentUrl,
+		current_host: message.currentHost,
+		page_title: message.currentTitle,
+		current_title: message.currentTitle,
+		page_html: message.html,
+	};
+
+	return value.replace( /\{([^}]+)\}/g, ( match, name ) => {
+		if ( ! Object.prototype.hasOwnProperty.call( replacements, name ) ) {
+			return match;
+		}
+
+		const replacement = replacements[ name ] || '';
+		return encode ? encodeURIComponent( replacement ) : replacement;
+	} );
+}
+
+function getActionUrl( action, message ) {
+	return replaceActionPlaceholders( action.url, message, true );
+}
+
+function getActionFields( action, message ) {
+	const fields = new URLSearchParams();
+	for ( const [ name, value ] of Object.entries( action.fields || {} ) ) {
+		fields.set( name, replaceActionPlaceholders( value, message ) );
+	}
+	return fields;
+}
+
+function getActionHeaders( action, message ) {
+	const headers = {};
+	for ( const [ name, value ] of Object.entries( action.headers || {} ) ) {
+		headers[ name ] = replaceActionPlaceholders( value, message );
+	}
+	return headers;
+}
+
+function actionRunsInline( action ) {
+	return action.run === 'inline' || action.target === 'inline' || action.inline === true;
+}
+
+function renderActionInput( input, message ) {
+	const wrapper = document.createElement( 'label' );
+	wrapper.className = 'inline-action-field';
+
+	const label = document.createElement( 'span' );
+	label.textContent = input.label || input.name;
+	wrapper.appendChild( label );
+
+	let field;
+	if ( input.type === 'textarea' ) {
+		field = document.createElement( 'textarea' );
+	} else {
+		field = document.createElement( 'input' );
+		field.type = input.type === 'tags' ? 'text' : ( input.type || 'text' );
+	}
+
+	field.name = input.name;
+	field.value = replaceActionPlaceholders( input.default ?? input.value ?? '', message );
+	field.placeholder = replaceActionPlaceholders( input.placeholder || '', message );
+	field.required = input.required === true;
+	wrapper.appendChild( field );
+
+	return wrapper;
+}
+
+function renderInlineAction( action, message ) {
+	const fragment = document.createDocumentFragment();
+	const toggle = document.createElement( 'button' );
+	toggle.type = 'button';
+	toggle.className = 'inline-action-toggle';
+	toggle.setAttribute( 'aria-expanded', 'false' );
+	toggle.title = getActionUrl( action, message );
+	toggle.textContent = action.name;
+	fragment.appendChild( toggle );
+
+	const form = document.createElement( 'form' );
+	form.className = 'inline-action-form';
+	form.style.display = 'none';
+
+	for ( const input of action.inputs || [] ) {
+		if ( ! input.name ) {
+			continue;
+		}
+		form.appendChild( renderActionInput( input, message ) );
+	}
+
+	const actions = document.createElement( 'div' );
+	actions.className = 'inline-action-buttons';
+
+	const submit = document.createElement( 'button' );
+	submit.type = 'submit';
+	submit.textContent = action.submit_label || 'Save';
+	actions.appendChild( submit );
+
+	const cancel = document.createElement( 'button' );
+	cancel.type = 'button';
+	cancel.textContent = 'Cancel';
+	actions.appendChild( cancel );
+
+	form.appendChild( actions );
+
+	const status = document.createElement( 'div' );
+	status.className = 'inline-action-status';
+	form.appendChild( status );
+	fragment.appendChild( form );
+
+	function setStatus( text, isError = false ) {
+		status.textContent = text;
+		status.classList.toggle( 'error', isError );
+	}
+
+	function submitAction() {
+		const method = ( action.method || 'POST' ).toUpperCase();
+		const fields = getActionFields( action, message );
+		for ( const input of action.inputs || [] ) {
+			if ( ! input.name ) {
+				continue;
+			}
+			const field = form.elements[ input.name ];
+			fields.set( input.name, field ? field.value : '' );
+		}
+
+		let url = getActionUrl( action, message );
+		const options = {
+			method,
+			credentials: action.credentials || 'include',
+			headers: getActionHeaders( action, message ),
+		};
+
+		if ( method === 'GET' ) {
+			const separator = url.includes( '?' ) ? '&' : '?';
+			const query = fields.toString();
+			if ( query ) {
+				url += separator + query;
+			}
+		} else {
+			options.body = fields.toString();
+			options.headers = Object.assign( {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			}, options.headers );
+		}
+
+		setStatus( action.progress_message || 'Saving…' );
+		submit.disabled = true;
+
+		fetch( url, options )
+			.then( response => {
+				if ( ! response.ok ) {
+					return response.text().then( text => {
+						let messageText = text;
+						try {
+							const json = JSON.parse( text );
+							messageText = json.message || messageText;
+						} catch ( error ) {
+							messageText = messageText || 'HTTP ' + response.status;
+						}
+						throw new Error( messageText );
+					} );
+				}
+
+				const contentType = response.headers.get( 'content-type' ) || '';
+				return contentType.includes( 'application/json' ) ? response.json() : response.text();
+			} )
+			.then( result => {
+				const messageText = result && typeof result === 'object' && result.message ? result.message : ( action.success_message || 'Saved.' );
+				setStatus( messageText );
+
+				if ( result && typeof result === 'object' && ( result.edit_url || result.url ) ) {
+					const link = document.createElement( 'a' );
+					link.href = result.edit_url || result.url;
+					link.target = '_blank';
+					link.textContent = result.link_label || 'Open';
+					status.appendChild( document.createTextNode( ' ' ) );
+					status.appendChild( link );
+				}
+			} )
+			.catch( error => {
+				setStatus( 'Error: ' + error.message, true );
+			} )
+			.finally( () => {
+				submit.disabled = false;
+			} );
+	}
+
+	toggle.addEventListener( 'click', () => {
+		if ( ( action.inputs || [] ).length === 0 ) {
+			submitAction();
+			form.style.display = '';
+			toggle.setAttribute( 'aria-expanded', 'true' );
+			return;
+		}
+
+		form.style.display = form.style.display === 'none' ? '' : 'none';
+		toggle.setAttribute( 'aria-expanded', form.style.display === 'none' ? 'false' : 'true' );
+		if ( form.style.display !== 'none' ) {
+			const firstField = form.querySelector( 'input, textarea' );
+			if ( firstField ) {
+				firstField.focus();
+			}
+		}
+	} );
+
+	cancel.addEventListener( 'click', () => {
+		form.style.display = 'none';
+		toggle.setAttribute( 'aria-expanded', 'false' );
+		setStatus( '' );
+	} );
+
+	form.addEventListener( 'submit', ( event ) => {
+		event.preventDefault();
+		submitAction();
+	} );
+
+	return fragment;
+}
+
 document.addEventListener( "DOMContentLoaded", () => {
 	const browser = window.browser || window.chrome;
 	document.getElementById( 'settingsLink' ).href = browser.runtime.getURL( 'settings/options.html' );
@@ -186,10 +410,12 @@ document.addEventListener( "DOMContentLoaded", () => {
 								li = document.createElement( 'li' );
 								li.classList.add( 'panel-list-item' );
 
-								if ( action.method === 'POST' ) {
+								if ( actionRunsInline( action ) ) {
+									li.appendChild( renderInlineAction( action, message ) );
+								} else if ( ( action.method || '' ).toUpperCase() === 'POST' ) {
 									const form = document.createElement( 'form' );
 									form.classList.add( 'panel-list-item' );
-									form.action = action.url.replace( '{current_url}', encodeURIComponent( message.currentUrl ) );
+									form.action = getActionUrl( action, message );
 									form.target = '_blank';
 									form.method = 'post';
 									form.enctype = 'application/x-www-form-urlencoded';
@@ -198,9 +424,7 @@ document.addEventListener( "DOMContentLoaded", () => {
 										const input = document.createElement( 'input' );
 										input.type = 'hidden';
 										input.name = name;
-										input.value = value
-											.replace( '{current_url}', message.currentUrl )
-											.replace( '{page_html}', message.html );
+										input.value = replaceActionPlaceholders( value, message );
 										form.appendChild( input );
 									}
 
@@ -211,7 +435,7 @@ document.addEventListener( "DOMContentLoaded", () => {
 									li.appendChild( form );
 								} else {
 									a = document.createElement( 'a' );
-									a.href = action.url.replace( '{current_url}', encodeURIComponent( message.currentUrl ) );
+									a.href = getActionUrl( action, message );
 									a.title = a.href;
 									a.target = '_blank';
 									a.textContent = action.name;
